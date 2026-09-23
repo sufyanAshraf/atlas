@@ -36,4 +36,16 @@ def build_query_graph(converter: SqlConverter, database: Database):
         except Exception as exc:
             return {"attempts": attempts, "error": f"SQL conversion failed: {exc}"}
 
-    
+    def execute(state: QueryState) -> QueryState:
+        try:
+            return {"rows": database.execute_readonly(state["sql"]), "error": ""}
+        except Exception as exc:
+            return {"error": str(exc)}
+
+    def respond(state: QueryState) -> QueryState:
+        rows = state.get("rows", [])
+        if not rows:
+            return {"response": "I couldn't find any matching data."}
+        return {"response": serialise_rows(rows)}
+
+
