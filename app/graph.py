@@ -48,4 +48,21 @@ def build_query_graph(converter: SqlConverter, database: Database):
             return {"response": "I couldn't find any matching data."}
         return {"response": serialise_rows(rows)}
 
+    def route_after_execute(state: QueryState) -> str:
+        if not state.get("error"):
+            return "respond"
+        if state.get("attempts", 0) >= MAX_ATTEMPTS:
+            raise QueryFailedError(
+                f"SQL query failed after {MAX_ATTEMPTS} attempts: {state['error']}"
+            )
+        return "convert"
+
+    def route_after_convert(state: QueryState) -> str:
+        if not state.get("error"):
+            return "execute"
+        if state.get("attempts", 0) >= MAX_ATTEMPTS:
+            raise QueryFailedError(
+                f"SQL query failed after {MAX_ATTEMPTS} attempts: {state['error']}"
+            )
+        return "convert"
 
