@@ -66,3 +66,14 @@ def build_query_graph(converter: SqlConverter, database: Database):
             )
         return "convert"
 
+
+    builder = StateGraph(QueryState)
+    builder.add_node("convert", convert)
+    builder.add_node("execute", execute)
+    builder.add_node("respond", respond)
+    builder.add_edge(START, "convert")
+    builder.add_conditional_edges("convert", route_after_convert)
+    builder.add_conditional_edges("execute", route_after_execute)
+    builder.add_edge("respond", END)
+    return builder.compile()
+
