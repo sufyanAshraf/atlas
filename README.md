@@ -17,8 +17,8 @@ flowchart TD
     E -->|Yes| F[Retrieve Verified SQL Query]
     E -->|No| G[DeepSeek R1 Generates SQL Query]
 
-    F --> H[Is SQL Query Valid?]
-    G --> J[Execute SQL Query]
+    G --> H[Is SQL Query Valid?]
+    F --> J[Execute SQL Query]
 
     H -->|Yes| J
     H -->|No| K{Attempts Remaining?}
